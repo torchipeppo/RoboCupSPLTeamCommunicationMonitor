@@ -31,17 +31,20 @@ class LogReplayTask implements Runnable {
     static class LoggedObject {
 
         public final long time;
+        public final byte gameState;
         public final Object object;
         public final int typeid;
 
-        public LoggedObject(final long time, final Object object) {
+        public LoggedObject(final long time, final byte gameState, final Object object) {
             this.time = time;
+            this.gameState = gameState;
             this.object = object;
             this.typeid = -1;
         }
 
-        public LoggedObject(final long time, final int typeid) {
+        public LoggedObject(final long time, final byte gameState, final int typeid) {
             this.time = time;
+            this.gameState = gameState;
             this.object = null;
             this.typeid = typeid;
         }
@@ -63,6 +66,7 @@ class LogReplayTask implements Runnable {
         if (logfile.getName().endsWith(".yaml")) {
             LogYamlLoader.load(logfile, nextObjects);
         } else {
+            System.out.println("WARNING: w/o YAML, game state logging might not work");
             stream = new ObjectInputStream(new BufferedInputStream(Files.newInputStream(logfile.toPath())));
         }
         next();
@@ -152,9 +156,9 @@ class LogReplayTask implements Runnable {
             try {
                 final long time = stream.readLong();
                 if (stream.readBoolean()) {
-                    obj = new LoggedObject(time, stream.readObject());
+                    obj = new LoggedObject(time, -1, stream.readObject());
                 } else {
-                    obj = new LoggedObject(time, stream.readInt());
+                    obj = new LoggedObject(time, -1, stream.readInt());
                 }
             } catch (EOFException e) {
                 try {

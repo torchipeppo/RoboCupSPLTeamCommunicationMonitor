@@ -188,8 +188,10 @@ class LogYamlLoader extends Constructor {
                             baseTime = time;
                             recording = true;
                         }
-                        queue.addLast(new LogReplayTask.LoggedObject(time - baseTime + recordedTime, message));
+                        queue.addLast(new LogReplayTask.LoggedObject(time - baseTime + recordedTime, data.gameState, message));
                     } else if (recording) { // Ending the current section?
+                        // end section signal
+                        queue.addLast(new LogReplayTask.LoggedObject(time - baseTime + recordedTime, -1, 14383421));
                         recordedTime += time - baseTime;
                         recording = false;
                     }

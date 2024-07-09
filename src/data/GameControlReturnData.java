@@ -60,6 +60,8 @@ public class GameControlReturnData implements Serializable {
     // +ve y-axis is 90 degrees counter clockwise from the +ve x-axis
     public final float[] ball = new float[2];
 
+    public boolean playing = false;
+
     public boolean valid = false;
     public boolean headerValid = false;
     public boolean versionValid = false;
@@ -146,5 +148,17 @@ public class GameControlReturnData implements Serializable {
         valid = headerValid && versionValid && playerNumValid && teamNumValid && fallenValid && poseValid && ballValid;
 
         return valid;
+    }
+
+    public boolean toCSVLine() {
+        return playerNum + "," +
+                teamNum + "," +
+                fallen + "," +
+                pose[0] + "," + 
+                pose[1] + "," + 
+                pose[2] + "," + 
+                ballAge + "," + 
+                ball[0] + "," + 
+                ball[1] + "\n";
     }
 }
