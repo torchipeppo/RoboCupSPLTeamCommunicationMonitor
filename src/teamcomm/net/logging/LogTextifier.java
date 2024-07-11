@@ -86,7 +86,6 @@ public class LogTextifier {
                         return;
                     }
                     message.playing = (obj.gameState == GameControlData.STATE_PLAYING);
-                    System.out.println(obj.gameState + " " + GameControlData.STATE_PLAYING + " " + message.playing + " " + message.pose[0] + " " + message.pose[1]);
                     sectionAccumulator += message.toCSVLine();
                 } else if (obj.object instanceof GameControlData) {
                     ;  // nulla
