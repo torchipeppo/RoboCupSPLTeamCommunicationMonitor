@@ -156,9 +156,9 @@ class LogReplayTask implements Runnable {
             try {
                 final long time = stream.readLong();
                 if (stream.readBoolean()) {
-                    obj = new LoggedObject(time, -1, stream.readObject());
+                    obj = new LoggedObject(time, (byte)-1, stream.readObject());
                 } else {
-                    obj = new LoggedObject(time, -1, stream.readInt());
+                    obj = new LoggedObject(time, (byte)-1, stream.readInt());
                 }
             } catch (EOFException e) {
                 try {

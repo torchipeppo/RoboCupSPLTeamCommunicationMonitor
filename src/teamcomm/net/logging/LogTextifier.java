@@ -2,17 +2,19 @@ package teamcomm.net.logging;
 
 import common.net.logging.Logger;
 import common.net.GameControlReturnDataPackage;
+import common.net.SPLTeamMessagePackage;
+import data.GameControlData;
+import data.GameControlReturnData;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import javax.swing.event.EventListenerList;
 import teamcomm.data.GameState;
 import teamcomm.net.GameControlReturnDataReceiverTCM;
 import teamcomm.net.SPLTeamMessageReceiverTCM;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.io.PrintWriter;
+import java.nio.ByteBuffer;
 
 /**
  * Singleton class for I dunno
@@ -39,7 +41,8 @@ public class LogTextifier {
      * @throws FileNotFoundException if the file could not be found
      * @throws IOException if an other I/O error happened
      */
-    public void open(final File logfile) throws FileNotFoundException, IOException {
+    public void open(final File logfile, boolean thenExit) throws FileNotFoundException, IOException {
+        System.out.println("hi");
 
         // Drain package queue of SPLTeamMessageReceiver and GameControlReturnDataReceiver
         SPLTeamMessageReceiverTCM.getInstance().clearPackageQueue();
@@ -51,7 +54,7 @@ public class LogTextifier {
         // Prevent the logger from logging (disableLogging can't be used for that)
         Logger.getInstance().setIsReplaying(true);
 
-        Deque<LoggedObject> nextItems = new LinkedList<>();
+        Deque<LogReplayTask.LoggedObject> nextItems = new LinkedList<>();
 
         // Open new log
         if (logfile.getName().endsWith(".yaml")) {
@@ -63,24 +66,27 @@ public class LogTextifier {
 
         int sectionNumber = 0;
         String sectionAccumulator = "";
-        for (LoggedObject obj = nextItems.pollFirst(); obj != null; obj = nextItems.pollFirst()) {
+        for (LogReplayTask.LoggedObject obj = nextItems.pollFirst(); obj != null; obj = nextItems.pollFirst()) {
             if (obj.typeid == 14383421) {
-                try (PrintWriter out = new PrintWriter(logfile.getName() + "__section_" + sectionNumber + ".csv")) {
-                    out.println(text);
+                try (PrintWriter out = new PrintWriter(logfile.getAbsolutePath() + "__section_" + sectionNumber + ".csv")) {
+                    out.println(sectionAccumulator);
+                    System.out.println("Written to " + logfile.getAbsolutePath() + "__section_" + sectionNumber + ".csv");
                 }
+                sectionAccumulator = "";
                 sectionNumber++;
             }
             else if (obj.object != null) {
                 if (obj.object instanceof SPLTeamMessagePackage) {
                     ;  // nulla
                 } else if (obj.object instanceof GameControlReturnDataPackage) {
-                    GameControlReturnDataPackage package = (GameControlReturnDataPackage) obj.object;
+                    GameControlReturnDataPackage the_package = (GameControlReturnDataPackage) obj.object;
                     final GameControlReturnData message = new GameControlReturnData();
-                    message.fromByteArray(ByteBuffer.wrap(package.message));
+                    message.fromByteArray(ByteBuffer.wrap(the_package.message));
                     if (!(message.headerValid && message.versionValid && message.playerNumValid && message.teamNumValid)) {
                         return;
                     }
-                    message.playing = (obj.gameState == STATE_PLAYING);
+                    message.playing = (obj.gameState == GameControlData.STATE_PLAYING);
+                    System.out.println(obj.gameState + " " + GameControlData.STATE_PLAYING + " " + message.playing + " " + message.pose[0] + " " + message.pose[1]);
                     sectionAccumulator += message.toCSVLine();
                 } else if (obj.object instanceof GameControlData) {
                     ;  // nulla
@@ -88,26 +94,26 @@ public class LogTextifier {
             }
         }
 
-
-
-
         this.close();
+
+        System.out.println("bye");
+        if (thenExit) {
+            System.exit(0);
+        }
     }
 
     /**
      * Closes the currently opened log file.
      */
     public void close() {
-        if (task != null) {
-            // Drain package queue of SPLTeamMessageReceiver and GameControlReturnDataReceiver
-            SPLTeamMessageReceiverTCM.getInstance().clearPackageQueue();
-            GameControlReturnDataReceiverTCM.getInstance().clearPackageQueue();
+        // Drain package queue of SPLTeamMessageReceiver and GameControlReturnDataReceiver
+        SPLTeamMessageReceiverTCM.getInstance().clearPackageQueue();
+        GameControlReturnDataReceiverTCM.getInstance().clearPackageQueue();
 
-            // Reset GameState
-            GameState.getInstance().reset();
+        // Reset GameState
+        GameState.getInstance().reset();
 
-            // Tell the logger that it can log again
-            Logger.getInstance().setIsReplaying(false);
-        }
+        // Tell the logger that it can log again
+        Logger.getInstance().setIsReplaying(false);
     }
 }

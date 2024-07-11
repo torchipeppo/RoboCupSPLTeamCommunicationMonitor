@@ -150,15 +150,16 @@ public class GameControlReturnData implements Serializable {
         return valid;
     }
 
-    public boolean toCSVLine() {
-        return playerNum + "," +
-                teamNum + "," +
-                fallen + "," +
-                pose[0] + "," + 
-                pose[1] + "," + 
-                pose[2] + "," + 
-                ballAge + "," + 
-                ball[0] + "," + 
-                ball[1] + "\n";
+    public String toCSVLine() {
+        return Boolean.toString(playing) + "," +
+                Byte.toString(playerNum) + "," +
+                Byte.toString(teamNum) + "," +
+                Boolean.toString(fallen) + "," +
+                Float.toString(pose[0]) + "," + 
+                Float.toString(pose[1]) + "," + 
+                Float.toString(pose[2]) + "," + 
+                Float.toString(ballAge) + "," + 
+                Float.toString(ball[0]) + "," + 
+                Float.toString(ball[1]) + "\n";
     }
 }

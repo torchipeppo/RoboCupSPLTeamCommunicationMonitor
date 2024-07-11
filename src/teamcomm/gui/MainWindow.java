@@ -88,6 +88,21 @@ public class MainWindow extends JFrame implements TeamEventListener {
         });
     }
 
+    public void textifyLogFile(final File file) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                try {
+                    Config.getInstance().set("ReplayLogfileDir", file.getParentFile().getCanonicalPath());
+                } catch (IOException ex) {
+                    Config.getInstance().set("ReplayLogfileDir", file.getParentFile().getAbsolutePath());
+                }
+                LogTextifier.getInstance().open(file, true);
+            } catch (IOException ex) {
+                Log.error("Could not open log file for textification: " + file);
+            }
+        });
+    }
+
     private void initialize() {
         // Setup window
         getRootPane().putClientProperty("apple.awt.fullscreenable", true);
@@ -184,7 +199,7 @@ public class MainWindow extends JFrame implements TeamEventListener {
                     } catch (IOException ex) {
                         Config.getInstance().set("ReplayLogfileDir", fc.getSelectedFile().getParentFile().getAbsolutePath());
                     }
-                    LogTextifier.getInstance().open(fc.getSelectedFile());
+                    LogTextifier.getInstance().open(fc.getSelectedFile(), false);
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(null,
                             "Error opening log file.",
