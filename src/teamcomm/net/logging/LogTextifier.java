@@ -83,7 +83,7 @@ public class LogTextifier {
                     final GameControlReturnData message = new GameControlReturnData();
                     message.fromByteArray(ByteBuffer.wrap(the_package.message));
                     if (!(message.headerValid && message.versionValid && message.playerNumValid && message.teamNumValid)) {
-                        return;
+                        continue;
                     }
                     message.playing = (obj.gameState == GameControlData.STATE_PLAYING);
                     sectionAccumulator += message.toCSVLine();
