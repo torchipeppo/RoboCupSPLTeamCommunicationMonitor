@@ -65,14 +65,15 @@ public class LogTextifier {
 
 
         int sectionNumber = 0;
-        String sectionAccumulator = "";
+        final String CSV_HEADER = "playing,player,team,fallen,x,y,theta,ballage,ballx,bally\n";
+        String sectionAccumulator = CSV_HEADER;
         for (LogReplayTask.LoggedObject obj = nextItems.pollFirst(); obj != null; obj = nextItems.pollFirst()) {
             if (obj.typeid == 14383421) {
                 try (PrintWriter out = new PrintWriter(logfile.getAbsolutePath() + "__section_" + sectionNumber + ".csv")) {
                     out.println(sectionAccumulator);
                     System.out.println("Written to " + logfile.getAbsolutePath() + "__section_" + sectionNumber + ".csv");
                 }
-                sectionAccumulator = "";
+                sectionAccumulator = CSV_HEADER;
                 sectionNumber++;
             }
             else if (obj.object != null) {
