@@ -31,23 +31,20 @@ class LogReplayTask implements Runnable {
     static class LoggedObject {
 
         public final long time;
-        public final byte gameState;
-        public final short secsRemaining;
+        public final GameControlData gameControlData;
         public final Object object;
         public final int typeid;
 
-        public LoggedObject(final long time, final byte gameState, final short secsRemaining, final Object object) {
+        public LoggedObject(final long time, final GameControlData gameControlData, final Object object) {
             this.time = time;
-            this.gameState = gameState;
-            this.secsRemaining = secsRemaining;
+            this.gameControlData = gameControlData;
             this.object = object;
             this.typeid = -1;
         }
 
-        public LoggedObject(final long time, final byte gameState, final short secsRemaining, final int typeid) {
+        public LoggedObject(final long time, final GameControlData gameControlData, final int typeid) {
             this.time = time;
-            this.gameState = gameState;
-            this.secsRemaining = secsRemaining;
+            this.gameControlData = gameControlData;
             this.object = null;
             this.typeid = typeid;
         }
@@ -158,9 +155,9 @@ class LogReplayTask implements Runnable {
             try {
                 final long time = stream.readLong();
                 if (stream.readBoolean()) {
-                    obj = new LoggedObject(time, (byte)-1, (short)-1, stream.readObject());
+                    obj = new LoggedObject(time, null, stream.readObject());
                 } else {
-                    obj = new LoggedObject(time, (byte)-1, (short)-1, stream.readInt());
+                    obj = new LoggedObject(time, null, stream.readInt());
                 }
             } catch (EOFException e) {
                 try {

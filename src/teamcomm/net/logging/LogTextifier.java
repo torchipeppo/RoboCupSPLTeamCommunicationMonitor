@@ -5,6 +5,7 @@ import common.net.GameControlReturnDataPackage;
 import common.net.SPLTeamMessagePackage;
 import data.GameControlData;
 import data.GameControlReturnData;
+import data.GameControlReturnDataForTheTextify;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class LogTextifier {
 
 
         int sectionNumber = 0;
-        final String CSV_HEADER = "playing,player,team,fallen,x,y,theta,ballage,ballx,bally,gctime,secsremaining\n";
+        final String CSV_HEADER = "playing,player,team,fallen,x,y,theta,ballage,ballx,bally,penalized,gctime,secsremaining\n";
         String sectionAccumulator = CSV_HEADER;
         for (LogReplayTask.LoggedObject obj = nextItems.pollFirst(); obj != null; obj = nextItems.pollFirst()) {
             if (obj.typeid == 14383421) {
@@ -81,14 +82,13 @@ public class LogTextifier {
                     ;  // nulla
                 } else if (obj.object instanceof GameControlReturnDataPackage) {
                     GameControlReturnDataPackage the_package = (GameControlReturnDataPackage) obj.object;
-                    final GameControlReturnData message = new GameControlReturnData();
+                    final GameControlReturnDataForTheTextify message = new GameControlReturnDataForTheTextify();
                     message.fromByteArray(ByteBuffer.wrap(the_package.message));
                     if (!(message.headerValid && message.versionValid && message.playerNumValid && message.teamNumValid)) {
                         continue;
                     }
-                    message.playing = (obj.gameState == GameControlData.STATE_PLAYING);
+                    message.gameControlData = obj.gameControlData;
                     message.gcTime = obj.time;
-                    message.secsRemaining = obj.secsRemaining;
                     sectionAccumulator += message.toCSVLine();
                 } else if (obj.object instanceof GameControlData) {
                     ;  // nulla
