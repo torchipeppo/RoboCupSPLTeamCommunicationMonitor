@@ -69,7 +69,6 @@ class LogReplayTask implements Runnable {
         if (logfile.getName().endsWith(".yaml")) {
             LogYamlLoader.load(logfile, nextObjects);
         } else {
-            System.out.println("WARNING: w/o YAML, game state logging might not work");
             stream = new ObjectInputStream(new BufferedInputStream(Files.newInputStream(logfile.toPath())));
         }
         next();

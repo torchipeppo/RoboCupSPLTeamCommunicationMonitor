@@ -65,7 +65,7 @@ public class LogTextifier {
 
 
         int sectionNumber = 0;
-        final String CSV_HEADER = "playing,player,team,fallen,x,y,theta,ballage,ballx,bally,secsremaining\n";
+        final String CSV_HEADER = "playing,player,team,fallen,x,y,theta,ballage,ballx,bally,gctime,secsremaining\n";
         String sectionAccumulator = CSV_HEADER;
         for (LogReplayTask.LoggedObject obj = nextItems.pollFirst(); obj != null; obj = nextItems.pollFirst()) {
             if (obj.typeid == 14383421) {
@@ -87,6 +87,7 @@ public class LogTextifier {
                         continue;
                     }
                     message.playing = (obj.gameState == GameControlData.STATE_PLAYING);
+                    message.gcTime = obj.time;
                     message.secsRemaining = obj.secsRemaining;
                     sectionAccumulator += message.toCSVLine();
                 } else if (obj.object instanceof GameControlData) {
