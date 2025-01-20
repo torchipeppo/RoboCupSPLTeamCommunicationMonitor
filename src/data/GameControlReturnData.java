@@ -61,6 +61,7 @@ public class GameControlReturnData implements Serializable {
     public final float[] ball = new float[2];
 
     public boolean playing = false;
+    public short secsRemaining = -1;
 
     public boolean valid = false;
     public boolean headerValid = false;
@@ -160,6 +161,7 @@ public class GameControlReturnData implements Serializable {
                 Float.toString(pose[2]) + "," + 
                 Float.toString(ballAge) + "," + 
                 Float.toString(ball[0]) + "," + 
-                Float.toString(ball[1]) + "\n";
+                Float.toString(ball[1]) + "," +
+                Short.toString(secsRemaining) + "\n";
     }
 }

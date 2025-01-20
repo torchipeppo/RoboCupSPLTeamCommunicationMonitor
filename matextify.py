@@ -33,9 +33,14 @@ def handle_csv(csvpath):
     # setup
     with open(csvpath) as f:
         input_lines = f.readlines()
+    
+    team1_is_ego = team1 in GOOD_FOR_EGO
+    team2_is_ego = team2 in GOOD_FOR_EGO
     header_str = input_lines[0]
+    header_str = header_str.replace("\n", ",goodego\n")
     team1_lines = [header_str]
     team2_lines = [header_str]
+    all_lines = [header_str]
     header_list = header_str.split(",")
     team_idx = header_list.index("team")
 
@@ -47,23 +52,35 @@ def handle_csv(csvpath):
         except IndexError:
             continue  # handle possible final empty line
         if int(the_team) == TEAM_IDs[team1]:
-            team1_lines.append(line_str)
+            team1_lines.append(line_str.replace("\n", ","+str(team1_is_ego)+"\n"))
+            all_lines.append(line_str.replace("\n", ","+str(team1_is_ego)+"\n"))
         elif int(the_team) == TEAM_IDs[team2]:
-            team2_lines.append(line_str)
+            team2_lines.append(line_str.replace("\n", ","+str(team2_is_ego)+"\n"))
+            all_lines.append(line_str.replace("\n", ","+str(team2_is_ego)+"\n"))
         else:
             raise Exception("Non Eurosedia")
 
     # write for the high-quality ego-teams
-    if team1 in GOOD_FOR_EGO:
+    p = csvpath.parent / (csvpath.stem + "__" + "ALL" + ".csv")
+    with open(p, "w") as f:
+        f.writelines(all_lines + ["\n"])
+    print("Written", p)
+    if team1_is_ego:
         p = csvpath.parent / (csvpath.stem + "__" + team1 + ".csv")
         with open(p, "w") as f:
             f.writelines(team1_lines + ["\n"])
         print("Written", p)
-    if team2 in GOOD_FOR_EGO:
+    if team2_is_ego:
         p = csvpath.parent / (csvpath.stem + "__" + team2 + ".csv")
         with open(p, "w") as f:
             f.writelines(team2_lines + ["\n"])
         print("Written", p)
+
+
+# main
+
+for csvpath in LOGDIR.rglob("*.csv"):
+    csvpath.unlink()
 
 for fpath in LOGDIR.rglob("*.yaml"):
     _log, _date, _time, team1, team2 = fpath.stem.split("_")
@@ -81,3 +98,6 @@ for fpath in LOGDIR.rglob("*.yaml"):
             print("Splitting", csvpath.name)
             handle_csv(csvpath)
             csvpath.unlink()
+
+for csvpath in LOGDIR.rglob("*ALL.csv"):
+    csvpath.rename(LOGDIR / "PRE_PRE_PREOCESSED_CSVs" / csvpath.name)
