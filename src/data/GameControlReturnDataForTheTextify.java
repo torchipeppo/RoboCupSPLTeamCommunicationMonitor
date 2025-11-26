@@ -30,7 +30,7 @@ public class GameControlReturnDataForTheTextify extends GameControlReturnData {
 
     public String toCSVLine() {
         boolean playing = (gameControlData.gameState == GameControlData.STATE_PLAYING);
-        boolean penalized = (findTeamInfo(teamNum).player[playerNum].penalty != PlayerInfo.PENALTY_NONE);
+        boolean penalized = (findTeamInfo(teamNum).player[playerNum-1].penalty != PlayerInfo.PENALTY_NONE);
         return Boolean.toString(playing) + "," +
                 Byte.toString(playerNum) + "," +
                 Byte.toString(teamNum) + "," +
