@@ -35,6 +35,7 @@ import teamcomm.data.RobotState;
 import teamcomm.data.event.TeamEvent;
 import teamcomm.data.event.TeamEventListener;
 import teamcomm.net.logging.LogReplayer;
+import teamcomm.net.logging.LogTextifier;
 
 /**
  * Class for the main window of the application.
@@ -83,6 +84,21 @@ public class MainWindow extends JFrame implements TeamEventListener {
                 LogReplayer.getInstance().open(file);
             } catch (IOException ex) {
                 Log.error("Could not open log file for replay: " + file);
+            }
+        });
+    }
+
+    public void textifyLogFile(final File file) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                try {
+                    Config.getInstance().set("ReplayLogfileDir", file.getParentFile().getCanonicalPath());
+                } catch (IOException ex) {
+                    Config.getInstance().set("ReplayLogfileDir", file.getParentFile().getAbsolutePath());
+                }
+                LogTextifier.getInstance().open(file, true);
+            } catch (IOException ex) {
+                Log.error("Could not open log file for textification: " + file);
             }
         });
     }
@@ -170,6 +186,28 @@ public class MainWindow extends JFrame implements TeamEventListener {
             }
         });
         replayItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
+
+        final JMenuItem textifyItem = new JMenuItem("Process log file");
+        fileMenu.add(textifyItem);
+        textifyItem.addActionListener(e -> {
+            final String dir = (String) Config.getInstance().get("ReplayLogfileDir");
+            final JFileChooser fc = new JFileChooser(dir == null ? new File(new File(".").getAbsoluteFile(), "logs_teamcomm") : new File(dir));
+            if (fc.showOpenDialog(MainWindow.this) == JFileChooser.APPROVE_OPTION) {
+                try {
+                    try {
+                        Config.getInstance().set("ReplayLogfileDir", fc.getSelectedFile().getParentFile().getCanonicalPath());
+                    } catch (IOException ex) {
+                        Config.getInstance().set("ReplayLogfileDir", fc.getSelectedFile().getParentFile().getAbsolutePath());
+                    }
+                    LogTextifier.getInstance().open(fc.getSelectedFile(), false);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null,
+                            "Error opening log file.",
+                            ex.getClass().getSimpleName(),
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
         final JMenuItem switchItem = new JMenuItem("Switch to GameStateVisualizer");
         switchItem.addActionListener(e -> {

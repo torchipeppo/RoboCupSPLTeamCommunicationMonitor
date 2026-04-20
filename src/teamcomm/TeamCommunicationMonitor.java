@@ -32,6 +32,7 @@ public class TeamCommunicationMonitor {
     private static boolean multicast = false;
     private static boolean forceEnablePlugins = false;
     private static File replayedLogAtStartup = null;
+    private static File textifiedLogAtStartup = null;
 
     private static boolean shutdown = false;
     private static final Object commandMutex = new Object();
@@ -137,6 +138,11 @@ public class TeamCommunicationMonitor {
             robotView.replayLogFile(replayedLogAtStartup);
         }
 
+        // If a log file was specified on the command line, start replaying it
+        if (robotView != null && textifiedLogAtStartup != null && !silentMode) {
+            robotView.textifyLogFile(textifiedLogAtStartup);
+        }
+
         // Wait for shutdown
         try {
             synchronized (commandMutex) {
@@ -221,6 +227,8 @@ public class TeamCommunicationMonitor {
     private static final String ARG_FORCEPLUGINS = "--forceplugins";
     private static final String ARG_DRAWINGS_SHORT = "-d";
     private static final String ARG_DRAWINGS = "--drawings";
+    private static final String ARG_TEXTIFY = "--textify";
+    private static final String ARG_TEXTIFY_SHORT = "-t";
 
     private static void parseArgs(final String[] args) {
         for (int i = 0; i < args.length; i++) {
@@ -235,6 +243,7 @@ public class TeamCommunicationMonitor {
                             + "\n  (--gsv)                         start as GameStateVisualizer"
                             + "\n  (-w | --windowed)               GSV: force windowed mode"
                             + "\n  (-m | --multicast)              also join multicast groups for simulated team communication"
+                            + "\n  (-t | --textify)                make csv from the given log file"
                             + "\n  (-p | --forceplugins)           GSV: force usage of plugins");
                     System.exit(0);
                 case ARG_DRAWINGS_SHORT:
@@ -261,6 +270,10 @@ public class TeamCommunicationMonitor {
                 case ARG_FORCEPLUGINS_SHORT:
                 case ARG_FORCEPLUGINS:
                     forceEnablePlugins = true;
+                    break;
+                case ARG_TEXTIFY_SHORT:
+                case ARG_TEXTIFY:
+                    textifiedLogAtStartup = new File(args[++i]);
                     break;
                 case ARG_GSV:
                     gsvMode = true;
