@@ -2,7 +2,7 @@ package teamcomm.net.logging;
 
 import common.net.logging.Logger;
 import common.net.GameControlReturnDataPackage;
-import common.net.SPLTeamMessagePackage;
+import common.net.TeamMessagePackage;
 import data.GameControlData;
 import data.GameControlReturnData;
 import data.GameControlReturnDataForTheTextify;
@@ -11,7 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import teamcomm.data.GameState;
 import teamcomm.net.GameControlReturnDataReceiverTCM;
-import teamcomm.net.SPLTeamMessageReceiverTCM;
+import teamcomm.net.TeamMessageReceiverTCM;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.io.PrintWriter;
@@ -45,8 +45,8 @@ public class LogTextifier {
     public void open(final File logfile, boolean thenExit) throws FileNotFoundException, IOException {
         System.out.println("hi");
 
-        // Drain package queue of SPLTeamMessageReceiver and GameControlReturnDataReceiver
-        SPLTeamMessageReceiverTCM.getInstance().clearPackageQueue();
+        // Drain package queue of TeamMessageReceiver and GameControlReturnDataReceiver
+        TeamMessageReceiverTCM.getInstance().clearPackageQueue();
         GameControlReturnDataReceiverTCM.getInstance().clearPackageQueue();
 
         // Reset GameState
@@ -78,7 +78,7 @@ public class LogTextifier {
                 sectionNumber++;
             }
             else if (obj.object != null) {
-                if (obj.object instanceof SPLTeamMessagePackage) {
+                if (obj.object instanceof TeamMessagePackage) {
                     ;  // nulla
                 } else if (obj.object instanceof GameControlReturnDataPackage) {
                     GameControlReturnDataPackage the_package = (GameControlReturnDataPackage) obj.object;
@@ -108,8 +108,8 @@ public class LogTextifier {
      * Closes the currently opened log file.
      */
     public void close() {
-        // Drain package queue of SPLTeamMessageReceiver and GameControlReturnDataReceiver
-        SPLTeamMessageReceiverTCM.getInstance().clearPackageQueue();
+        // Drain package queue of TeamMessageReceiver and GameControlReturnDataReceiver
+        TeamMessageReceiverTCM.getInstance().clearPackageQueue();
         GameControlReturnDataReceiverTCM.getInstance().clearPackageQueue();
 
         // Reset GameState
