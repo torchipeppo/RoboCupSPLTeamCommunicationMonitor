@@ -8,6 +8,7 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.AnimatorBase;
 import common.Log;
+import java.awt.GraphicsDevice;
 import java.nio.FloatBuffer;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -34,6 +35,8 @@ import teamcomm.gui.drawings.Text;
 public abstract class View3D implements GLEventListener, TeamEventListener {
 
     public static final int ANIMATION_FPS = 10;
+    private static final boolean IS_OSX = System.getProperty("os.name").contains("OS X");
+    private static float scaleFactor = 1.f;
 
     protected AnimatorBase animator;
     protected GLAutoDrawable autoDrawable;
@@ -268,5 +271,24 @@ public abstract class View3D implements GLEventListener, TeamEventListener {
                 rightRobots.addAll(e.players);
             }
         }
+    }
+
+    /**
+     * Determine the scaling factor of the desktop, because text would be drawn in the wrong size
+     * if the factor differs from 1.
+     * @return The scaling factor, e.g. 2 on Retina displays.
+     */
+    public static float getDesktopScalingFactor() {
+        return scaleFactor;
+    }
+
+    /**
+     * Update the scaling factor of the desktop, because text would be drawn in the wrong size
+     * if the factor differs from 1.
+     * @param device The graphics device used for drawing.
+     */
+    public static void updateDesktopScalingFactor(final GraphicsDevice device) {
+        scaleFactor = IS_OSX ? (float) device.getDefaultConfiguration().getDefaultTransform().getScaleX()
+                : 1.f;
     }
 }

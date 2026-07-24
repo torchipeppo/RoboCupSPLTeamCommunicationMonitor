@@ -47,9 +47,9 @@ public class TeamInfo implements Serializable {
     public byte teamNumber;                                         // unique team number
     public byte fieldPlayerColor;                                   // color of the field players
     public byte goalkeeperColor;                                    // color of the goalkeeper
-    public byte goalkeeper = 1;                                     // player number of the goalkeeper (1-MAX_NUM_PLAYERS)
+    public byte goalkeeper = 1;                                     // player number of the goalkeeper (0-MAX_NUM_PLAYERS)
     public byte score;                                              // team's score
-    public byte penaltyShot = 0;                                    // penalty shot counter, or fallback mode flag (if not in GAME_PHASE_PENALTYSHOOT)
+    public byte penaltyShot = 0;                                    // penalty shot counter
     public short singleShots = 0;                                   // bits represent penalty shot success
     public short messageBudget = 0;                                 // number of team messages the team is allowed to send for the remainder of the game
     public final PlayerInfo[] player = new PlayerInfo[MAX_NUM_PLAYERS];   // the team's players
