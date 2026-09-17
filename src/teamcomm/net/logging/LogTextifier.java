@@ -66,6 +66,7 @@ public class LogTextifier {
 
 
         int sectionNumber = 0;
+        // final String CSV_HEADER = "gamestate,playing,player,team,fallen,x,y,theta,ballage,ballx,bally,penalized,gctime,secsremaining\n";
         final String CSV_HEADER = "playing,player,team,fallen,x,y,theta,ballage,ballx,bally,penalized,gctime,secsremaining\n";
         String sectionAccumulator = CSV_HEADER;
         for (LogReplayTask.LoggedObject obj = nextItems.pollFirst(); obj != null; obj = nextItems.pollFirst()) {

@@ -28,10 +28,28 @@ public class GameControlReturnDataForTheTextify extends GameControlReturnData {
         return null;
     }
 
+    private String gameStateToString(byte gameState) {
+        switch (gameState) {
+            case GameControlData.STATE_INITIAL:
+                return "initial";
+            case GameControlData.STATE_READY:
+                return "ready";
+            case GameControlData.STATE_SET:
+                return "set";
+            case GameControlData.STATE_PLAYING:
+                return "playing";
+            case GameControlData.STATE_FINISHED:
+                return "finish";
+            default:
+                return "undefined(" + gameState + ")";
+        }
+    }
+
     public String toCSVLine() {
         boolean playing = (gameControlData.gameState == GameControlData.STATE_PLAYING);
         boolean penalized = (findTeamInfo(teamNum).player[playerNum-1].penalty != PlayerInfo.PENALTY_NONE);
-        return Boolean.toString(playing) + "," +
+        return //gameStateToString(gameControlData.gameState) + "," +
+                Boolean.toString(playing) + "," +
                 Byte.toString(playerNum) + "," +
                 Byte.toString(teamNum) + "," +
                 Boolean.toString(fallen) + "," +
